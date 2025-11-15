@@ -19,3 +19,13 @@
     @apply text-white bg-[#5f6fff]
   }
 }
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+.loader div:nth-child(2){
+  animation-delay:0.2s ;
+}
+.loader div:nth-child(3){
+  animation-delay:0.2s ;
+}

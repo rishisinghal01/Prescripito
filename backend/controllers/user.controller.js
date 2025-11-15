@@ -7,6 +7,7 @@ import { cloudinary } from "../config/cloudinary.js"; // ✅ Correct import
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import razorpay from 'razorpay'
+import chatModel from "../models/chatModel.js";
 const registeruser = async (req, res) => {
   try {
 
@@ -327,9 +328,37 @@ const verifyRazorpay = async (req,res)=>{
   }
 }
 
+const getPublishdedImages = async (req, res) => {
+  try {
+    const publishedImages = await chatModel.aggregate([
+      { $unwind: "$messages" },
+      {
+        $match: {
+          "messages.isImage": true,
+          "messages.isPublished": true
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          imageUrl: "$messages.content",
+          username: "$username"
+        }
+      }
+    ]);
+
+    res.json({
+      success: true,
+      images: publishedImages.reverse()
+    });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
 
 
 
 
 
-export { registeruser, loginuser, getprofile, updateprofile, bookAppointment, getAllAppointment, cancelAppointment, paymentRazorpay ,verifyRazorpay}
+
+export { registeruser, loginuser, getprofile, updateprofile, bookAppointment, getAllAppointment, cancelAppointment, paymentRazorpay ,verifyRazorpay,getPublishdedImages}

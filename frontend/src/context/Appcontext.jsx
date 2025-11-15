@@ -8,6 +8,7 @@ const AppContextProvider = (props) => {
   const [doctors, setdoctors] = useState([])
   const [token, settoken] = useState(localStorage.getItem("token") ? localStorage.getItem("token") : false)
   const [userData, setuserData] = useState(false);
+  
   const loadUserData = async () => {
     try {
       const { data } = await axios.get(`${backendurl}/api/user/get-profile`, {

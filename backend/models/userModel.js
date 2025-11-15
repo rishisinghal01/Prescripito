@@ -34,7 +34,11 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     default: "0000000000"
-  }
+  },
+  credits:{
+    type:Number,
+    default:20
+  } 
 });
 
 const userModel =
