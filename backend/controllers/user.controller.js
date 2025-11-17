@@ -257,76 +257,86 @@ const cancelAppointment = async (req, res) => {
 };
 
 const razorpayInstance = new razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "kk", // ✅ Use env for safety
-  key_secret: process.env.RAZORPAY_SECRET || "djhdjchjdjchj",
+  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
+  key_secret: process.env.RAZORPAY_SECRET || "test_secret",
 });
 
+// ------------------- Create Payment Order -------------------
 const paymentRazorpay = async (req, res) => {
   try {
     const { appointmentId } = req.body;
 
-    // ✅ Validate ID
     if (!appointmentId) {
       return res.json({ success: false, message: "Missing appointment ID" });
     }
 
-    const appointmentData = await appointmentModel.findById(appointmentId);
+    const appointment = await appointmentModel.findById(appointmentId);
 
-    if (!appointmentData || appointmentData.cancelled) {
+    if (!appointment || appointment.cancelled) {
       return res.json({
         success: false,
         message: "Appointment cancelled or not found",
       });
     }
 
-    // ✅ Build order details
-    const options = {
-      amount: Number(appointmentData.amount) * 100, // convert to paise
+    const orderOptions = {
+      amount: Number(appointment.amount) * 100, // Convert INR → Paise
       currency: "INR",
       receipt: String(appointmentId),
     };
 
-    // ✅ Create Razorpay order safely
-    const order = await razorpayInstance.orders.create(options);
+    const order = await razorpayInstance.orders.create(orderOptions);
 
     res.json({
       success: true,
-      message: "Payment order created successfully",
+      message: "Order created successfully",
       order,
     });
   } catch (error) {
-    // ✅ Safely handle all possible error formats
-    console.error("Razorpay Payment Error:", error);
+    console.error("Razorpay Order Error:", error);
     res.json({
       success: false,
       message:
-        error?.message ||
         error?.error?.description ||
-        "Payment order creation failed",
+        error?.message ||
+        "Failed to create Razorpay order",
     });
   }
 };
 
-const verifyRazorpay = async (req,res)=>{
-   try{
-  const {razorpay_order_id}=req.body;
-  const orderinfo= await razorpayInstance.orders.fetch(razorpay_order_id )
+// ------------------- Verify Payment -------------------
+const verifyRazorpay = async (req, res) => {
+  try {
+    const { razorpay_order_id } = req.body;
 
-  console.log(orderinfo)
+    if (!razorpay_order_id) {
+      return res.json({ success: false, message: "Missing order ID" });
+    }
 
-  if(orderinfo.status==="paid"){
-    await appointmentModel.findById(orderinfo.receipt,{payment:true}) 
-    return res.json({success:true,message:"Payment Successfull"})
+    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
+
+    console.log("ORDER INFO:", orderInfo);
+
+    if (orderInfo.status === "paid") {
+      await appointmentModel.findByIdAndUpdate(orderInfo.receipt, {
+        payment: true,
+      });
+
+      return res.json({
+        success: true,
+        message: "Payment Successful",
+      });
+    } else {
+      return res.json({
+        success: false,
+        message: "Payment Failed",
+      });
+    }
+  } catch (error) {
+    console.log("Razorpay Verify Error:", error);
+    res.json({ success: false, message: error.message });
   }
-   else{
-   return res.json({success:false,message:"Payment Failed"})
-   }
-  }
-  catch(error){
-    console.log(error);
-    res.json({success:false,message:error.message})
-  }
-}
+};
 
 const getPublishdedImages = async (req, res) => {
   try {

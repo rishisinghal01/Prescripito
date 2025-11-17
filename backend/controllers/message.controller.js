@@ -4,42 +4,74 @@ import chatModel from "../models/chatModel.js";
 import userModel from "../models/userModel.js";
 import axios from 'axios'
 const textMessageController = async (req, res) => {
-    try {
-        const userId = req.userId;
-        const user=await userModel.findById(userId);
-        if(user.credits<1){
-            res.json({success:false,message:"You don't have enough credits"})
+  try {
+    const userId = req.userId;
+    const user = await userModel.findById(userId);
+
+    if (user.credits < 1) {
+      return res.json({ success: false, message: "You don't have enough credits" });
+    }
+
+    const { chatId, prompt } = req.body;
+    const chat = await chatModel.findOne({ userId, _id: chatId });
+
+    // Add user message to chat first
+    chat.messages.push({
+      role: "user",
+      content: prompt,
+      timestamp: Date.now(),
+      isImage: false
+    });
+
+    // 🔥 SYSTEM PRE-PROMPT (CORE INJECTION)
+    const systemPrompt = `
+You are a highly experienced doctor with 10+ years of clinical expertise. 
+Your job is to:
+- Carefully understand the user's symptoms
+- Explain the possible causes in simple words
+- Suggest over-the-counter medicines ONLY (no prescription drugs)
+- Recommend lifestyle changes, precautions, and diet
+- Clearly tell when the user should visit a real doctor or emergency room
+- ALWAYS stay safe, accurate, and avoid giving harmful or restricted medical advice.
+`;
+
+    const { choices } = await openai.chat.completions.create({
+      model: "gemini-2.0-flash",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: prompt
         }
-        const { chatId, prompt } = req.body
-        const chat = await chatModel.findOne({ userId, _id: chatId })
-        chat.messages.push({
-            role: "user",
-            content: prompt,
-            timestamp: Date.now(),
-            isImage: false
-        })
+      ],
+    });
 
+    const reply = { 
+      ...choices[0].message, 
+      timestamp: Date.now(), 
+      isImage: false 
+    };
 
-        const { choices } = await openai.chat.completions.create({
-            model: "gemini-2.0-flash",
-            messages: [
-                {
-                    role: "user",
-                    content: prompt,
-                },
-            ],
-        });
+    // Send AI reply to client
+    res.json({ success: true, reply });
 
-        const reply = { ...choices[0].message, timestamp: Date.now(), isImage: false }
-        res.json({ success: true, reply })
-        chat.messages.push(reply)
-        await chat.save();
-        await userModel.updateOne({ _id: userId }, { $inc: { credits: -1 } })
-    }
-    catch (err) {
-        res.json({ success: false, message: err.message })
-    }
-}
+    // Save AI reply to DB
+    chat.messages.push(reply);
+    await chat.save();
+
+    // Reduce credits
+    await userModel.updateOne(
+      { _id: userId },
+      { $inc: { credits: -1 } }
+    );
+
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
 
 
 
