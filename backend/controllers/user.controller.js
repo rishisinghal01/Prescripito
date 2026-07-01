@@ -100,6 +100,7 @@ const updateprofile = async (req, res) => {
     const { name, phone, address, dob, gender } = req.body;
     const userId = req.userId; // ✅ from middleware
     const image = req.file; // ✅ correctly accessed
+    console.log(image)
 
     // ✅ validate required fields
     if (!name || !phone || !dob || !gender) {
@@ -123,7 +124,6 @@ const updateprofile = async (req, res) => {
       gender,
     });
 
-    // ✅ upload image if provided
     if (image) {
       const uploaded = await cloudinary.uploader.upload(image.path, {
         resource_type: "image", // ✅ fixed: must be a string

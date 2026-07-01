@@ -1,82 +1,81 @@
 import imagekit from "../config/imagekit.js";
-import openai from "../config/openai.js";
+// import { geminiModel } from "../config/gemini.js";
 import chatModel from "../models/chatModel.js";
 import userModel from "../models/userModel.js";
 import axios from 'axios'
 const textMessageController = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await userModel.findById(userId);
+    const { chatId, prompt } = req.body;
 
+    const user = await userModel.findById(userId);
     if (user.credits < 1) {
-      return res.json({ success: false, message: "You don't have enough credits" });
+      return res.json({ success: false, message: "Not enough credits" });
     }
 
-    const { chatId, prompt } = req.body;
-    const chat = await chatModel.findOne({ userId, _id: chatId });
+    const chat = await chatModel.findOne({ _id: chatId, userId });
 
-    // Add user message to chat first
     chat.messages.push({
       role: "user",
       content: prompt,
+      isImage: false,
       timestamp: Date.now(),
-      isImage: false
     });
 
-    // 🔥 SYSTEM PRE-PROMPT (CORE INJECTION)
-    const systemPrompt = `
-You are a highly experienced doctor with 10+ years of clinical expertise. 
-Your job is to:
-- Carefully understand the user's symptoms
-- Explain the possible causes in simple words
-- Suggest over-the-counter medicines ONLY (no prescription drugs)
-- Recommend lifestyle changes, precautions, and diet
-- Clearly tell when the user should visit a real doctor or emergency room
-- ALWAYS stay safe, accurate, and avoid giving harmful or restricted medical advice.
-`;
+    
+    const response = await axios.post(
+"https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent",
+      {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `
+You are a general health and wellness information assistant.
+Educational info only. No diagnosis. No prescriptions.
 
-    const { choices } = await openai.chat.completions.create({
-      model: "gemini-2.0-flash",
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
+User: ${prompt}
+                `,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-    });
+        params: {
+          key: process.env.GEMINI_API_KEY,
+        },
+      }
+    );
 
-    const reply = { 
-      ...choices[0].message, 
-      timestamp: Date.now(), 
-      isImage: false 
+    const aiText =
+      response.data.candidates[0].content.parts[0].text;
+
+    const reply = {
+      role: "assistant",
+      content: aiText,
+      isImage: false,
+      timestamp: Date.now(),
     };
 
-    // Send AI reply to client
-    res.json({ success: true, reply });
-
-    // Save AI reply to DB
     chat.messages.push(reply);
     await chat.save();
 
-    // Reduce credits
     await userModel.updateOne(
       { _id: userId },
       { $inc: { credits: -1 } }
     );
 
+    res.json({ success: true, reply });
+
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
 };
-
-
-
-
-
 
 const imagemessageControlller = async (req, res) => {
   try {
@@ -142,12 +141,4 @@ const imagemessageControlller = async (req, res) => {
     return res.json({ success: false, message: "Image generation failed" });
   }
 };
-
-
-
-
-
-
-
-
 export { textMessageController, imagemessageControlller }
