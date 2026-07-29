@@ -56,8 +56,61 @@ User: ${prompt}
       aiText = response.data.candidates[0].content.parts[0].text;
     } catch (apiError) {
       console.log("Gemini API Error:", apiError.message);
-      // Fallback for demo if API fails (e.g. 429 Rate Limit)
-      aiText = "I'm currently receiving too many requests (API Rate Limit). But as a general health tip: always stay hydrated, eat a balanced diet, and consult a real doctor for medical advice!";
+      // Fallback to OpenRouter (Free Models)
+      try {
+        if (!process.env.OPENROUTER_API_KEY) {
+            throw new Error("Missing OpenRouter API Key");
+        }
+
+        const freeModels = [
+            "google/gemma-4-26b-a4b-it:free",
+            "nvidia/nemotron-3-nano-omni:free",
+            "google/gemini-2.0-flash-lite-preview-02-05:free",
+            "meta-llama/llama-3.1-8b-instruct:free"
+        ];
+
+        let dsResponse = null;
+        let lastError = null;
+
+        for (const model of freeModels) {
+            try {
+                dsResponse = await axios.post(
+                  "https://openrouter.ai/api/v1/chat/completions",
+                  {
+                    model: model,
+                    messages: [
+                      { role: "system", content: "You are a general health and wellness information assistant. Educational info only. No diagnosis. No prescriptions." },
+                      { role: "user", content: prompt }
+                    ]
+                  },
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+                    }
+                  }
+                );
+                break; // Break the loop if successful!
+            } catch (err) {
+                console.log(`OpenRouter Model ${model} Failed:`, err.response?.data?.error?.message || err.message);
+                lastError = err;
+            }
+        }
+
+        if (!dsResponse) {
+            throw lastError; // If all models fail, throw the last error
+        }
+
+        aiText = dsResponse.data.choices[0].message.content;
+      } catch (dsError) {
+        console.log("OpenRouter API Error:", dsError.message);
+        if (dsError.message === "Missing OpenRouter API Key") {
+            aiText = "Oops! Gemini limit is reached, and the fallback cannot be used because the 'OPENROUTER_API_KEY' is missing in the backend .env file. Please add your OpenRouter API key!";
+        } else {
+            const errorDetail = dsError.response?.data?.error?.message || dsError.message;
+            aiText = `OpenRouter Fallback Failed: ${errorDetail}. Please check your OpenRouter API key.`;
+        }
+      }
     }
 
     const reply = {
@@ -103,30 +156,48 @@ const analyzeImageController = async (req, res) => {
 
     chat.messages.push(userMsg);
 
-    // 2️⃣ CALL LOCAL PYTHON ML SERVICE FOR MEDICAL ANALYSIS
+    // 2️⃣ CALL OPENROUTER VISION API FOR REAL MEDICAL ANALYSIS
     let aiText = "";
     try {
+      if (!process.env.OPENROUTER_API_KEY) {
+        throw new Error("Missing OpenRouter API Key");
+      }
+      
+      // Ensure the image string has the proper base64 prefix
+      const formattedBase64 = base64Image.startsWith("data:image") 
+        ? base64Image 
+        : `data:image/jpeg;base64,${base64Image}`;
+
       const response = await axios.post(
-        "http://127.0.0.1:5000/predict",
+        "https://openrouter.ai/api/v1/chat/completions",
         {
-          image: base64Image
+          model: "google/gemma-4-26b-a4b-it:free", // Free Vision-capable model from 2026 screenshot URL slug
+          messages: [
+            { 
+              role: "system", 
+              content: "You are a professional medical image analysis assistant. Provide a detailed, educational analysis of the provided medical image (e.g., MRI, X-Ray, Skin condition). Point out visible anomalies if any. Disclaimer: State that this is for educational purposes and not a clinical diagnosis." 
+            },
+            { 
+              role: "user", 
+              content: [
+                { type: "text", text: prompt || "Please analyze this medical image in detail." },
+                { type: "image_url", image_url: { url: formattedBase64 } }
+              ] 
+            }
+          ]
         },
         {
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
           }
         }
       );
       
-      const ml_data = response.data;
-      if (ml_data.success) {
-        aiText = `**Analysis Complete (Local ML Model)**\n\n**Prediction:** ${ml_data.diagnosis}\n\n*Extracted Features (RGB Mean):* R=${ml_data.features_extracted.R_mean}, G=${ml_data.features_extracted.G_mean}, B=${ml_data.features_extracted.B_mean}\n\n*Note: This is a custom-trained Scikit-Learn model analyzing the visual features of your image.*`;
-      } else {
-        aiText = "ML Model failed to analyze the image: " + ml_data.error;
-      }
+      aiText = response.data.choices[0].message.content;
     } catch (apiError) {
-      console.log("Local ML API Error:", apiError.message);
-      aiText = "The local Python ML server is currently unreachable. Please make sure `python3 app.py` is running in the ml_service directory.";
+      console.log("Vision API Error:", apiError.response?.data?.error?.message || apiError.message);
+      aiText = `Image Analysis Failed: ${apiError.response?.data?.error?.message || apiError.message}. Please try again later.`;
     }
 
     // 3️⃣ CREATE AI MESSAGE

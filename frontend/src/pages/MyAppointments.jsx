@@ -110,7 +110,14 @@ const MyAppointments = () => {
 
 
   useEffect(() => {
-    if (token) getUserAppointments();
+    if (token) {
+      getUserAppointments();
+      // Poll every 5 seconds for real-time updates
+      const intervalId = setInterval(() => {
+        getUserAppointments();
+      }, 5000);
+      return () => clearInterval(intervalId);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 

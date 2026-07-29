@@ -5,11 +5,15 @@ import { toast } from 'react-toastify';
 const DoctorList = () => {
     const {aToken,getAllDoctors,doctors,changeAvailability}=useContext(AdminContext);
     useEffect(()=>{
-
         if(aToken){
             getAllDoctors();
+            // Poll every 5 seconds for real-time updates
+            const intervalId = setInterval(() => {
+                getAllDoctors();
+            }, 5000);
+            return () => clearInterval(intervalId);
         }
-    },[]) 
+    },[aToken])  
   
   return (
     <div className='m-5 max-h-[90vh] overflow-y-scroll transition-colors duration-300'>

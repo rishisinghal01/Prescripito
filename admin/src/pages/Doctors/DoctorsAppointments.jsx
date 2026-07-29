@@ -7,7 +7,14 @@ const DoctorsAppointments = () => {
   const { dToken, appointment, docappointments,calculateAge,completeAppointment,cancelAppointment } = useContext(DoctorContext);
     const {slotdateFormat} =useContext(AppContext)
   useEffect(() => {
-    if (dToken) docappointments();
+    if (dToken) {
+      docappointments();
+      // Poll every 5 seconds for real-time updates
+      const intervalId = setInterval(() => {
+        docappointments();
+      }, 5000);
+      return () => clearInterval(intervalId);
+    }
   }, [dToken]);
 
   return (

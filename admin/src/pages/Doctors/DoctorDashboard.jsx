@@ -7,7 +7,14 @@ const DoctorDashboard = () => {
   const { dToken, doctordash, doctordashdata ,cancelAppointment,completeAppointment,} = useContext(DoctorContext);
 const {slotdateFormat}= useContext(AppContext)
   useEffect(() => {
-    if (dToken) doctordashdata();
+    if (dToken) {
+      doctordashdata();
+      // Poll every 5 seconds for real-time updates
+      const intervalId = setInterval(() => {
+        doctordashdata();
+      }, 5000);
+      return () => clearInterval(intervalId);
+    }
   }, [dToken]);
 
   if (!doctordash) return <p>Loading dashboard...</p>;

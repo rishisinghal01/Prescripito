@@ -28,7 +28,7 @@ const Sidebar = ({ setisMenuopen, isMenuopen }) => {
     }
   }
   return (
-    <div className={`flex flex-col h-screen min-w-72 p-5 border-r border-[#5f6fff]/20 dark:border-gray-800 bg-white dark:bg-gray-900 transition-all duration-500 rounded-r-2xl shadow-[0_0_20px_rgba(95,111,255,0.05)] max-md:absolute left-0 z-10 ${!isMenuopen && "max-sm:-translate-x-full "}`}>
+    <div className={`flex flex-col h-full min-w-72 md:min-w-80 p-5 border-r border-[#5f6fff]/20 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md transition-all duration-500 rounded-tr-3xl shadow-[5px_0_30px_rgba(95,111,255,0.08)] max-md:absolute left-0 z-20 ${!isMenuopen && "max-sm:-translate-x-full "}`}>
 
       {/* --- New Chat Button --- */}
       <button  onClick={createNewChat} className='flex justify-center items-center w-full py-2 mt-10 text-white bg-[#5f6fff] hover:bg-[#4b58e0] dark:bg-blue-600 dark:hover:bg-blue-500 text-sm rounded-lg cursor-pointer shadow-md transition-all font-medium'>
@@ -58,9 +58,9 @@ const Sidebar = ({ setisMenuopen, isMenuopen }) => {
       <div className='mt-3 flex flex-col gap-2 overflow-y-auto scrollbar-hide pr-1'>
         {chats
           .filter(chat =>
-            chat.messages[0]
+            chat?.messages?.[0]?.content
               ? chat.messages[0].content.toLowerCase().includes(search.toLowerCase())
-              : chat.name.toLowerCase().includes(search.toLowerCase())
+              : (chat?.name || '').toLowerCase().includes(search.toLowerCase())
           )
           .map(chat => {
             const isActive = selectedChat?._id === chat._id
@@ -79,9 +79,9 @@ const Sidebar = ({ setisMenuopen, isMenuopen }) => {
               >
                 <div>
                   <p className='truncate w-44 text-sm font-medium text-gray-800 dark:text-gray-200'>
-                    {chat.messages.length > 0
+                    {chat?.messages?.length > 0
                       ? chat.messages[0].content.slice(0, 32)
-                      : chat.name}
+                      : (chat?.name || "New Chat")}
                   </p>
                   <p className='text-xs text-[#5f6fff]/70 dark:text-gray-500'>
                     {moment(chat.updatedAt).fromNow()}
@@ -99,26 +99,7 @@ const Sidebar = ({ setisMenuopen, isMenuopen }) => {
           })}
       </div>
 
-      {/* --- Community Link --- */}
-      <div
-        onClick={() => {
-          navigate('/ai/community');
-          setisMenuopen(false)
-        }}
-        className={`flex items-center gap-3 p-3 mt-6 border rounded-md cursor-pointer transition-all duration-200 ${isActiveLink('/ai/community')
-            ? 'bg-[#5f6fff]/10 dark:bg-gray-800 border-[#5f6fff] dark:border-gray-600 text-[#5f6fff] dark:text-blue-400'
-            : 'border-gray-200 dark:border-gray-700 hover:border-[#5f6fff]/40 dark:hover:border-gray-600 hover:bg-[#f3f5ff] dark:hover:bg-gray-800 dark:text-gray-300'
-          }`}
-      >
-        <img
-          src={chatassets.gallery_icon}
-          className={`w-5 invert opacity-80 dark:invert-0 transition ${isActiveLink('/ai/community') && 'invert-0'
-            }`}
 
-          alt=''
-        />
-        <p className='text-sm font-medium'>Community Images</p>
-      </div>
 
       {/* --- Credit Section --- */}
       <div

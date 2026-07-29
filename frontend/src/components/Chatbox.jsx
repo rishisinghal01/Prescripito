@@ -57,7 +57,7 @@ const Chatbox = () => {
 
       setselectedChat(prev => ({
         ...prev,
-        messages: [...prev.messages, ...newMessages]
+        messages: [...(prev.messages || []), ...newMessages]
       }));
 
       const promptBackup = prompt;
@@ -93,7 +93,7 @@ const Chatbox = () => {
       // AI message added instantly
       setselectedChat(prev => ({
         ...prev,
-        messages: [...prev.messages, aiMsg]
+        messages: [...(prev.messages || []), aiMsg]
       }));
 
       // Deduct credits
@@ -115,12 +115,15 @@ const Chatbox = () => {
   }, [selectedChat?.messages]);
 
   return (
-    <div className="flex-1 flex flex-col justify-between px-5 md:px-10 lg:px-20 xl:px-28 h-[calc(100vh-80px)] overflow-hidden bg-white dark:bg-[#0f172a] transition-colors duration-300">
-      <div ref={containerRef} className="flex-1 overflow-y-auto mb-2 pr-2 scrollbar-hide">
+    <div className="flex-1 flex flex-col justify-between px-5 md:px-10 lg:px-20 xl:px-28 h-[calc(100vh-80px)] overflow-hidden bg-white/40 dark:bg-[#0f172a]/40 backdrop-blur-sm transition-colors duration-300">
+      <div ref={containerRef} className="flex-1 overflow-y-auto mb-2 pr-2 scrollbar-hide pt-6">
         {!selectedChat?.messages?.length && (
-          <div className="flex flex-col items-center justify-center h-full">
-            <img src={assets.logo} alt="" className="w-full max-w-56 sm:max-w-68 opacity-50 dark:opacity-20" style={{ filter: theme === 'dark' ? 'invert(1) hue-rotate(180deg)' : 'none' }} />
-            <p className="mt-5 text-4xl sm:text-6xl text-center text-gray-400 dark:text-gray-600 font-light">
+          <div className="flex flex-col items-center justify-center h-full animate-fade-in-up">
+            <div className="relative">
+              <div className="absolute inset-0 bg-blue-500/20 dark:bg-blue-400/20 blur-3xl rounded-full"></div>
+              <img src={assets.logo} alt="" className="w-full max-w-56 sm:max-w-68 opacity-80 dark:opacity-40 dark:invert dark:hue-rotate-180 animate-pulse-slow relative z-10 drop-shadow-xl" />
+            </div>
+            <p className="mt-8 text-4xl sm:text-6xl text-center font-light bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 bg-clip-text text-transparent opacity-90 drop-shadow-sm">
               Ask me anything
             </p>
           </div>
@@ -154,7 +157,7 @@ const Chatbox = () => {
 
       <form
         onSubmit={onSubmit}
-        className="bg-[#5f6fff]/10 dark:bg-gray-800/80 border border-[#5f6fff] dark:border-gray-600 rounded-full w-full max-w-2xl p-2 pl-4 mx-auto mb-6 flex gap-3 items-center shadow-md overflow-hidden backdrop-blur-md transition-colors">
+        className="bg-white/60 dark:bg-[#1a233a]/60 border border-white/40 dark:border-gray-600/50 rounded-full w-full max-w-3xl p-3 px-5 mx-auto mb-6 flex gap-3 items-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-xl transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500/50 hover:shadow-[0_8px_40px_rgb(0,0,0,0.16)] animate-fade-in-up">
         <select
           value={mode}
           onChange={e => {
@@ -162,14 +165,14 @@ const Chatbox = () => {
             setImageFile(null);
             setBase64Image(null);
           }}
-          className="text-sm bg-transparent text-gray-700 dark:text-gray-300 outline-none cursor-pointer border-r border-gray-400 dark:border-gray-600 pr-2">
+          className="text-sm bg-transparent text-gray-700 dark:text-gray-200 outline-none cursor-pointer border-r border-gray-300 dark:border-gray-600 pr-3 font-medium">
           <option value="text" className="dark:bg-gray-800">Text</option>
           <option value="analyze" className="dark:bg-gray-800">Analyze Image</option>
         </select>
 
         {mode === 'analyze' ? (
-          <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-2 overflow-hidden">
-            <label className="cursor-pointer text-xs text-[#5f6fff] dark:text-blue-400 bg-white dark:bg-gray-700 font-semibold py-1.5 px-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 whitespace-nowrap shadow-sm border border-gray-200 dark:border-gray-600 transition-colors">
+          <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-3 overflow-hidden">
+            <label className="cursor-pointer text-xs text-white bg-gradient-to-r from-indigo-500 to-purple-600 font-semibold py-2 px-4 rounded-full hover:shadow-lg hover:opacity-90 whitespace-nowrap shadow-sm transition-all">
               Choose Image
               <input 
                 type="file" 
@@ -183,7 +186,7 @@ const Chatbox = () => {
               onChange={e => setprompt(e.target.value)}
               type="text"
               placeholder="Ask about this image (optional)..."
-              className="flex-1 text-sm bg-transparent outline-none w-full min-w-[100px] text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+              className="flex-1 text-[15px] bg-transparent outline-none w-full min-w-[100px] text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 font-light"
             />
           </div>
         ) : (
@@ -192,15 +195,15 @@ const Chatbox = () => {
             onChange={e => setprompt(e.target.value)}
             type="text"
             placeholder="Type your prompt..."
-            className="flex-1 text-sm bg-transparent outline-none text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            className="flex-1 text-[15px] bg-transparent outline-none text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 font-light"
             required
           />
         )}
 
-        <button disabled={loading} className="shrink-0 hover:scale-105 transition-transform">
+        <button disabled={loading} className="shrink-0 group hover:scale-110 transition-transform bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-full p-2.5 shadow-md flex items-center justify-center">
           <img
             src={loading ? chatassets.stop_icon : chatassets.send_icon}
-            className="w-7 sm:w-8 dark:invert"
+            className={`w-5 h-5 invert ${loading ? 'animate-spin' : 'group-hover:translate-x-0.5 transition-transform'}`}
             alt="send"
           />
         </button>

@@ -11,7 +11,14 @@ const AllAppointment = () => {
     appointment,cancelAppointment } = useContext(AdminContext);
   const { calculateAge, slotdateFormat } = useContext(AppContext)
   useEffect(() => {
-    appointment();
+    if (aToken) {
+      appointment();
+      // Poll every 5 seconds for real-time updates
+      const intervalId = setInterval(() => {
+        appointment();
+      }, 5000);
+      return () => clearInterval(intervalId);
+    }
   }, [aToken])
   return (
 <div className='w-full max-w-6xl m-5 transition-colors duration-300'>

@@ -9,7 +9,14 @@ const Dashboard = () => {
     const {slotdateFormat} = useContext(AppContext)
 
   useEffect(() => {
-    if (aToken) getDashboardData();
+    if (aToken) {
+      getDashboardData();
+      // Poll every 5 seconds for real-time updates
+      const intervalId = setInterval(() => {
+        getDashboardData();
+      }, 5000);
+      return () => clearInterval(intervalId);
+    }
   }, [aToken]);
 
   if (!dashdata)

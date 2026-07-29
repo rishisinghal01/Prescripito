@@ -26,7 +26,7 @@ const ChatContextProvider = (props) => {
 
         if (data.chats.length === 0) {
           await createNewChat();
-          return fetchuserChat();
+          return; // createNewChat will call fetchuserChat on success
         }
 
         setselectedChat(data.chats[0]);
@@ -64,9 +64,13 @@ const ChatContextProvider = (props) => {
         return;
       }
 
-      await axios.get("/api/chat/create", { headers: { token } });
-
-      await fetchuserChat();
+      const { data } = await axios.get("/api/chat/create", { headers: { token } });
+      
+      if (data.success) {
+        await fetchuserChat();
+      } else {
+        toast.error(data.message || data.err || "Failed to create chat");
+      }
     } catch (err) {
       toast.error(err.message);
     }
