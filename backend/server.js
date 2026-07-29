@@ -67,6 +67,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", async (data) => {
+    console.log(`Received send_message from ${data.senderType}:`, data.text || data.attachmentName);
     // data: { appointmentId, senderType, senderId, text, attachmentUrl, attachmentType }
     try {
       const newMsg = new appointmentMessageModel({
