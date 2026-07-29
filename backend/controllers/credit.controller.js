@@ -1,4 +1,5 @@
 import transactionModel from "../models/transictionModel.js";
+import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 
 const plans = [
@@ -61,8 +62,8 @@ export const purchasePlans = async (req, res) => {
       process.env.FRONTEND_URL;
 
     const session = await stripe.checkout.sessions.create({
-      success_url: `${origin}/chatbot/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/chatbot`,
+      success_url: `${origin}/ai?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/ai`,
       line_items: [
         {
           price_data: {
@@ -83,6 +84,32 @@ export const purchasePlans = async (req, res) => {
     });
 
     res.json({ success: true, url: session.url });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
+
+export const verifyStripe = async (req, res) => {
+  try {
+    const { session_id } = req.body;
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (session.payment_status === "paid") {
+       const transactionId = session.metadata.transactionId;
+       const transaction = await transactionModel.findById(transactionId);
+       if (transaction && !transaction.isPaid) {
+          // Add credits to user
+          await userModel.updateOne(
+            { _id: transaction.userId },
+            { $inc: { credits: transaction.credits } }
+          );
+          // Mark transaction as paid
+          transaction.isPaid = true;
+          await transaction.save();
+          return res.json({ success: true, message: "Payment Successful! Credits Added." });
+       }
+       return res.json({ success: true, message: "Already Verified" });
+    }
+    return res.json({ success: false, message: "Payment Not Completed" });
   } catch (err) {
     res.json({ success: false, message: err.message });
   }

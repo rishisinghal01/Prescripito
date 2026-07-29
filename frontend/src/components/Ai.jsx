@@ -1,15 +1,47 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Sidebar from './Sidebar'
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Chatbox from './Chatbox'
 import Credit from '../pages/Credit'
 import Community from '../pages/Community'
 import { chatassets } from '../assets/gpt-assets/chatasset'
 import '../assets/gpt-assets/prism.css'
 import Loading from '../pages/Loading'
+import { AppContext } from '../context/Appcontext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+
 const Ai = () => {
   const [isMenuopen, setisMenuopen] = useState(false)
   const {pathname}= useLocation()
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { backendurl, token, loadUserData } = useContext(AppContext);
+
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    if (sessionId && token) {
+      const verifyPayment = async () => {
+        try {
+          const { data } = await axios.post(`${backendurl}/api/credit/verify-stripe`, { session_id: sessionId }, { headers: { token } });
+          if (data.success) {
+            toast.success(data.message);
+            loadUserData();
+          } else {
+            toast.error(data.message);
+          }
+          // Remove session_id from URL
+          searchParams.delete('session_id');
+          setSearchParams(searchParams);
+        } catch (error) {
+          console.error(error);
+          toast.error("Error verifying payment");
+        }
+      };
+      verifyPayment();
+    }
+  }, [searchParams, token, backendurl, loadUserData, setSearchParams]);
+
   if(pathname ==='/ai/loading') return <Loading/>
   return (
     <>
