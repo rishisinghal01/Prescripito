@@ -1,6 +1,8 @@
 import React, { useContext, useEffect,useState } from 'react'
 import { useNavigate, useParams} from 'react-router-dom';
 import { AppContext } from '../context/Appcontext';
+import { motion } from 'framer-motion';
+
 const Doctors = () => {
   const {speciality}=useParams();
   const {doctors}=useContext(AppContext);
@@ -32,20 +34,25 @@ const Doctors = () => {
                 <p onClick={()=>speciality==="Neurologist" ?navigate('/doctors'):navigate("/doctors/Neurologist")} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality==='Neurologist'?"bg-indigo-100 text-black":""}`}>Neurologist</p>
                 <p onClick={()=>speciality==="Gastroenterologist" ?navigate('/doctors'):navigate("/doctors/Gastroenterologist")} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer ${speciality==='Gastroenterologist'?"bg-indigo-100 text-black":""}`}> Gastroenterologist</p>
             </div>
-            <div className='w-full grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5'>
+            <div className='w-full grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-6 gap-y-8'>
                 {filterdoc.map((item,idx)=>{
-            return <div key={idx} onClick={()=>{navigate(`/appointment/${item._id}`)}} className='border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500'>
+            return <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                key={idx} onClick={()=>{navigate(`/appointment/${item._id}`)}} className='border border-[#C9D8FF] bg-white rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] hover:shadow-xl transition-all duration-500 shadow-sm flex flex-col'>
 
-                <img className='bg-blue-50 ' src={item.image} alt="" />
-                <div className='p-4'>
-                  <div className={`flex items-center gap-2 text-sm text-center${item.available?" text-green-500":"text-gray-500"}'`}>
-                        <p className={`w-2 h-2 ${item.available?" bg-green-500":"bg-gray-500"} rounded-full`}></p> <p>{item.available?"Available":"Not Available"}</p>
-
+                <div className='w-full h-56 bg-[#EAEFFF] flex items-center justify-center overflow-hidden'>
+                   <img className='w-full h-full object-cover object-top' src={item.image} alt="" />
+                </div>
+                <div className='p-4 flex-1 flex flex-col'>
+                  <div className={`flex items-center gap-2 text-sm text-center ${item.available ? "text-green-500" : "text-gray-500"}`}>
+                        <p className={`w-2 h-2 ${item.available ? "bg-green-500" : "bg-gray-500"} rounded-full`}></p> <p>{item.available ? "Available" : "Not Available"}</p>
                     </div>
-                    <p className='text-gray-900 text-lg font-medium '>{item.name}</p>
+                    <p className='text-gray-900 text-lg font-medium mt-1'>{item.name}</p>
                     <p className='text-gray-600 text-sm'>{item.speciality}</p>
                 </div>
-            </div>
+            </motion.div>
 
         }) }
             </div>
