@@ -39,7 +39,15 @@ Prism.highlightAll()
       {isUser && (
         <div className='flex items-start max-w-[80%]'>
           <div className='bg-[#5f6fff] text-white px-4 py-2 rounded-2xl rounded-tr-none shadow-sm text-sm sm:text-base leading-relaxed'>
-            {message.content}
+            {message.isImage ? (
+              <img
+                src={message.content}
+                alt='User Upload' 
+                className='w-full max-w-xs rounded-md mt-1'
+              />
+            ) : (
+              message.content
+            )}
             <p className='text-[10px] text-gray-200 mt-1 text-right'>
               {moment(message.timestamp).fromNow()}
             </p>

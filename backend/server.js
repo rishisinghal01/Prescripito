@@ -22,7 +22,8 @@ connectCloudinary();
 app.post('/api/stripe', express.raw({ type: 'application/json' }), stripeHooks);
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors());
 
 // Routes
@@ -40,4 +41,5 @@ app.use("/api/credit",creditRoute)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log("Backend successfully restarted with AI fallback!");
 });

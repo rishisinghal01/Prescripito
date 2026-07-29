@@ -12,43 +12,70 @@ const Chatbox = () => {
   const [loading, setloading] = useState(false);
   const [prompt, setprompt] = useState('');
   const [mode, setmode] = useState('text');
-  const [isPublished, setisPublished] = useState(false);
+  
+  // New state for image analysis
+  const [imageFile, setImageFile] = useState(null);
+  const [base64Image, setBase64Image] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBase64Image(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const onSubmit = async e => {
     try {
       e.preventDefault();
-      if (!prompt.trim()) return;
+      
+      if (mode === 'text' && !prompt.trim()) return;
+      if (mode === 'analyze' && !base64Image) return toast('Please select an image to analyze');
       if (!user) return toast('Login to send message');
 
       setloading(true);
 
-      // User message added instantly
-      const userMsg = {
+      let newMessages = [];
+      if (mode === 'analyze' && base64Image) {
+        newMessages.push({
+          role: 'user',
+          content: base64Image,
+          timestamp: Date.now() - 1,
+          isImage: true
+        });
+      }
+      newMessages.push({
         role: 'user',
-        content: prompt,
+        content: mode === 'analyze' && prompt.trim() === '' ? 'Analyze this medical image.' : prompt,
         timestamp: Date.now(),
-        isImage: false
-      };
+        isImage: false,
+      });
 
       setselectedChat(prev => ({
         ...prev,
-        messages: [...prev.messages, userMsg]
+        messages: [...prev.messages, ...newMessages]
       }));
 
       const promptBackup = prompt;
       setprompt('');
 
       let res;
-      if (mode === 'image') {
+      if (mode === 'analyze') {
         res = await axios.post(
-          '/api/message/image',
-          { chatId: selectedChat._id, prompt: promptBackup, isPublished },
+          '/api/message/analyze',
+          { chatId: selectedChat._id, prompt: promptBackup, base64Image },
           { headers: { token } }
         );
+        setImageFile(null);
+        setBase64Image(null);
       } else {
         res = await axios.post(
           '/api/message/text',
-          { chatId: selectedChat._id, prompt: promptBackup, isPublished },
+          { chatId: selectedChat._id, prompt: promptBackup },
           { headers: { token } }
         );
       }
@@ -72,7 +99,7 @@ const Chatbox = () => {
       // Deduct credits
       setuser(prev => ({
         ...prev,
-        credits: prev.credits - (mode === 'image' ? 2 : 1)
+        credits: prev.credits - (mode === 'analyze' ? 2 : 1)
       }));
     } catch (err) {
       toast.error(err.message);
@@ -112,38 +139,65 @@ const Chatbox = () => {
         )}
       </div>
 
-      {mode === 'image' && (
-        <label className="inline-flex items-center gap-2 mb-3 text-sm mx-auto">
-          <p className="text-xs">Publish Generated Image to community</p>
-          <input
-            type="checkbox"
-            checked={isPublished}
-            onChange={e => setisPublished(e.target.checked)}
-          />
-        </label>
+      {base64Image && mode === 'analyze' && (
+        <div className="w-full max-w-2xl mx-auto mb-2 flex justify-start pl-4">
+          <div className="relative inline-block border-2 border-[#5f6fff] rounded-lg p-1 bg-white shadow-md">
+            <img src={base64Image} alt="Preview" className="h-16 w-auto rounded object-contain" />
+            <button 
+              type="button"
+              onClick={() => { setImageFile(null); setBase64Image(null); }}
+              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm"
+            >✕</button>
+          </div>
+        </div>
       )}
 
       <form
         onSubmit={onSubmit}
-        className="bg-[#5f6fff]/20 border border-[#5f6fff] rounded-full w-full max-w-2xl p-2 pl-4 mx-auto mb-6 flex gap-3 items-center shadow-md">
+        className="bg-[#5f6fff]/20 border border-[#5f6fff] rounded-full w-full max-w-2xl p-2 pl-4 mx-auto mb-6 flex gap-3 items-center shadow-md overflow-hidden">
         <select
           value={mode}
-          onChange={e => setmode(e.target.value)}
-          className="text-sm bg-transparent text-gray-700 outline-none cursor-pointer">
+          onChange={e => {
+            setmode(e.target.value);
+            setImageFile(null);
+            setBase64Image(null);
+          }}
+          className="text-sm bg-transparent text-gray-700 outline-none cursor-pointer border-r border-gray-400 pr-2">
           <option value="text">Text</option>
-          <option value="image">Image</option>
+          <option value="analyze">Analyze Image</option>
         </select>
 
-        <input
-          value={prompt}
-          onChange={e => setprompt(e.target.value)}
-          type="text"
-          placeholder="Type your prompt..."
-          className="flex-1 text-sm bg-transparent outline-none"
-          required
-        />
+        {mode === 'analyze' ? (
+          <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-2 overflow-hidden">
+            <label className="cursor-pointer text-xs text-[#5f6fff] bg-white font-semibold py-1.5 px-3 rounded-full hover:bg-gray-100 whitespace-nowrap shadow-sm border border-gray-200">
+              Choose Image
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </label>
+            <input
+              value={prompt}
+              onChange={e => setprompt(e.target.value)}
+              type="text"
+              placeholder="Ask about this image (optional)..."
+              className="flex-1 text-sm bg-transparent outline-none w-full min-w-[100px]"
+            />
+          </div>
+        ) : (
+          <input
+            value={prompt}
+            onChange={e => setprompt(e.target.value)}
+            type="text"
+            placeholder="Type your prompt..."
+            className="flex-1 text-sm bg-transparent outline-none"
+            required
+          />
+        )}
 
-        <button disabled={loading}>
+        <button disabled={loading} className="shrink-0">
           <img
             src={loading ? chatassets.stop_icon : chatassets.send_icon}
             className="w-7 sm:w-8"
