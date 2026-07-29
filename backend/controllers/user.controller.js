@@ -256,10 +256,7 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-const razorpayInstance = new razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "test_key",
-  key_secret: process.env.RAZORPAY_SECRET || "test_secret",
-});
+
 
 // ------------------- Create Payment Order -------------------
 const paymentRazorpay = async (req, res) => {
@@ -285,6 +282,11 @@ const paymentRazorpay = async (req, res) => {
       receipt: String(appointmentId),
     };
 
+    console.log("RAZORPAY DEBUG:", "rzp_test_TJEne35dUsMAcz", "4Wy5OuTq4k73oHdA5ZG89AlS");
+    const razorpayInstance = new razorpay({
+      key_id: "rzp_test_TJEne35dUsMAcz",
+      key_secret: "4Wy5OuTq4k73oHdA5ZG89AlS",
+    });
     const order = await razorpayInstance.orders.create(orderOptions);
 
     res.json({
@@ -313,6 +315,10 @@ const verifyRazorpay = async (req, res) => {
       return res.json({ success: false, message: "Missing order ID" });
     }
 
+    const razorpayInstance = new razorpay({
+      key_id: "rzp_test_TJEne35dUsMAcz",
+      key_secret: "4Wy5OuTq4k73oHdA5ZG89AlS",
+    });
     const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
 
     console.log("ORDER INFO:", orderInfo);

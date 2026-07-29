@@ -1,6 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config({ override: true });
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js"; // ✅ Correct import
 import adminRouter from "./routes/admin.route.js";
@@ -11,7 +12,7 @@ import messageRouter from "./routes/message.route.js";
 import creditRoute from "./routes/credit.routes.js";
 import { stripeHooks } from "./controllers/webhooks.controller.js";
 
-dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
