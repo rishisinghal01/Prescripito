@@ -8,6 +8,7 @@ import { chatassets } from '../assets/gpt-assets/chatasset'
 import '../assets/gpt-assets/prism.css'
 import Loading from '../pages/Loading'
 import { AppContext } from '../context/Appcontext'
+import { ChatContext } from '../context/Chatcontext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
@@ -17,6 +18,7 @@ const Ai = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { backendurl, token, loadUserData } = useContext(AppContext);
+  const { fetchuser } = useContext(ChatContext);
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
@@ -26,7 +28,8 @@ const Ai = () => {
           const { data } = await axios.post(`${backendurl}/api/credit/verify-stripe`, { session_id: sessionId }, { headers: { token } });
           if (data.success) {
             toast.success(data.message);
-            loadUserData();
+            loadUserData(); // Updates AppContext
+            if (fetchuser) fetchuser(); // Updates ChatContext
           } else {
             toast.error(data.message);
           }
@@ -40,7 +43,7 @@ const Ai = () => {
       };
       verifyPayment();
     }
-  }, [searchParams, token, backendurl, loadUserData, setSearchParams]);
+  }, [searchParams, token, backendurl, loadUserData, fetchuser, setSearchParams]);
 
   if(pathname ==='/ai/loading') return <Loading/>
   return (

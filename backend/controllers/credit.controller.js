@@ -100,7 +100,7 @@ export const verifyStripe = async (req, res) => {
           // Add credits to user
           await userModel.updateOne(
             { _id: transaction.userId },
-            { $inc: { credits: transaction.credits } }
+            { $inc: { credits: Number(transaction.credits) } }
           );
           // Mark transaction as paid
           transaction.isPaid = true;
