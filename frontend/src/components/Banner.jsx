@@ -11,7 +11,7 @@ const Banner = () => {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className='flex bg-[#5f6fff] rounded-lg px-6 sm:px-10 md:px-14 lg:px-12 md:mx-10 overflow-hidden'>
+        className='flex bg-gradient-to-r from-[#5f6fff] to-[#4052d6] dark:from-[#2e3a8c] dark:to-[#1e265c] rounded-lg px-6 sm:px-10 md:px-14 lg:px-12 md:mx-10 overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-300'>
 
         {/* ------- Left Side ------- */}
         <motion.div 

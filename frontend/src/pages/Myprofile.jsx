@@ -59,28 +59,28 @@ const [image, setimage] = useState(false);
 
       {isEdit ? (
         <input
-          className='bg-gray-50 text-3xl font-medium max-w-60 mt-4 outline-none border-b border-gray-300 focus:border-[#5f6fff]'
+          className='bg-gray-50 dark:bg-gray-800 text-3xl font-medium max-w-60 mt-4 outline-none border-b border-gray-300 dark:border-gray-600 focus:border-[#5f6fff] dark:text-white transition-colors'
           value={userData.name}
           onChange={(e) => setuserData(prev => ({ ...prev, name: e.target.value }))}
           type='text'
         />
       ) : (
-        <p className='font-medium text-3xl text-neutral-800 mt-4'>{userData.name}</p>
+        <p className='font-medium text-3xl text-neutral-800 dark:text-gray-100 mt-4 transition-colors'>{userData.name}</p>
       )}
 
-      <hr className='bg-zinc-400 h-[1px] border-none mt-3' />
+      <hr className='bg-zinc-400 dark:bg-zinc-600 h-[1px] border-none mt-3 transition-colors' />
 
       {/* -------- Contact Information -------- */}
       <div>
-        <p className='text-neutral-500 underline mt-3'>CONTACT INFORMATION</p>
-        <div className='grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700'>
+        <p className='text-neutral-500 dark:text-gray-400 underline mt-3 transition-colors'>CONTACT INFORMATION</p>
+        <div className='grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700 dark:text-gray-300 transition-colors'>
           <p className='font-medium'>Email id:</p>
-          <p className='text-blue-500'>{userData.email}</p>
+          <p className='text-blue-500 dark:text-blue-400'>{userData.email}</p>
 
           <p className='font-medium'>Phone:</p>
           {isEdit ? (
             <input
-              className='bg-gray-50 max-w-52 outline-none border-b border-gray-300 focus:border-[#5f6fff]'
+              className='bg-gray-50 dark:bg-gray-800 dark:text-white max-w-52 outline-none border-b border-gray-300 dark:border-gray-600 focus:border-[#5f6fff] transition-colors'
               value={userData.phone}
               onChange={(e) => setuserData(prev => ({ ...prev, phone: e.target.value }))}
               type='text'
@@ -93,7 +93,7 @@ const [image, setimage] = useState(false);
          {isEdit ? (
   <div>
     <input
-      className="bg-gray-50 w-full outline-none border-b border-gray-300 focus:border-[#5f6fff]"
+      className="bg-gray-50 dark:bg-gray-800 dark:text-white w-full outline-none border-b border-gray-300 dark:border-gray-600 focus:border-[#5f6fff] transition-colors"
       onChange={(e) =>
         setuserData((prev) => ({
           ...prev,
@@ -105,7 +105,7 @@ const [image, setimage] = useState(false);
       placeholder="Line 1"
     />
     <input
-      className="bg-gray-50 w-full outline-none border-b border-gray-300 focus:border-[#5f6fff] mt-1"
+      className="bg-gray-50 dark:bg-gray-800 dark:text-white w-full outline-none border-b border-gray-300 dark:border-gray-600 focus:border-[#5f6fff] mt-1 transition-colors"
       onChange={(e) =>
         setuserData((prev) => ({
           ...prev,
@@ -118,7 +118,7 @@ const [image, setimage] = useState(false);
     />
   </div>
 ) : (
-  <p className="text-gray-500">
+  <p className="text-gray-500 dark:text-gray-400 transition-colors">
     {userData?.address?.line1 || "—"}
     <br />
     {userData?.address?.line2 || ""}
@@ -130,12 +130,12 @@ const [image, setimage] = useState(false);
 
       {/* -------- Basic Information -------- */}
       <div>
-        <p className='text-neutral-500 underline mt-3'>BASIC INFORMATION</p>
-        <div className='grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700'>
+        <p className='text-neutral-500 dark:text-gray-400 underline mt-3 transition-colors'>BASIC INFORMATION</p>
+        <div className='grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700 dark:text-gray-300 transition-colors'>
           <p className='font-medium'>Gender:</p>
           {isEdit ? (
             <select
-              className='max-w-20 bg-gray-100 border-b border-gray-300 focus:border-[#5f6fff] outline-none'
+              className='max-w-20 bg-gray-100 dark:bg-gray-800 dark:text-white border-b border-gray-300 dark:border-gray-600 focus:border-[#5f6fff] outline-none transition-colors'
               value={userData.gender}
               onChange={(e) => setuserData(prev => ({ ...prev, gender: e.target.value }))}
             >
@@ -143,19 +143,19 @@ const [image, setimage] = useState(false);
               <option value="Female">Female</option>
             </select>
           ) : (
-            <p className='text-gray-400'>{userData.gender}</p>
+            <p className='text-gray-400 dark:text-gray-500'>{userData.gender}</p>
           )}
 
           <p className='font-medium'>Birthday:</p>
           {isEdit ? (
             <input
-              className='max-w-28 bg-gray-100 border-b border-gray-300 focus:border-[#5f6fff] outline-none'
+              className='max-w-28 bg-gray-100 dark:bg-gray-800 dark:text-white border-b border-gray-300 dark:border-gray-600 focus:border-[#5f6fff] outline-none transition-colors'
               type="date"
               value={userData.dob}
               onChange={(e) => setuserData(prev => ({ ...prev, dob: e.target.value }))}
             />
           ) : (
-            <p className='text-gray-400'>{userData.dob}</p>
+            <p className='text-gray-400 dark:text-gray-500'>{userData.dob}</p>
           )}
         </div>
       </div>

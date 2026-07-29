@@ -16,9 +16,9 @@ Prism.highlightAll()
           <img
             src={chatassets.ai_icon}
             alt='AI'
-            className='w-9 h-9 rounded-full mr-3 shadow-sm border border-[#5f6fff]/30'
+            className='w-9 h-9 rounded-full mr-3 shadow-sm border border-[#5f6fff]/30 dark:border-[#5f6fff]/50 bg-white dark:bg-gray-800'
           />
-          <div className='bg-white border border-[#5f6fff]/20 shadow-sm px-4 py-2 rounded-2xl rounded-tl-none text-gray-700 text-sm sm:text-base leading-relaxed'>
+          <div className='bg-white dark:bg-gray-800 border border-[#5f6fff]/20 dark:border-[#5f6fff]/40 shadow-sm px-4 py-2 rounded-2xl rounded-tl-none text-gray-700 dark:text-gray-200 text-sm sm:text-base leading-relaxed transition-colors'>
             {message.isImage ? (
               <img
                 src={message.content}
@@ -28,7 +28,7 @@ Prism.highlightAll()
             ) : (
               <Markdown>{message.content}</Markdown>
             )}
-            <p className='text-[10px] text-gray-400 mt-1 text-right'>
+            <p className='text-[10px] text-gray-400 dark:text-gray-500 mt-1 text-right'>
               {moment(message.timestamp).fromNow()}
             </p>
           </div>
@@ -38,7 +38,7 @@ Prism.highlightAll()
       {/* --- User Message --- */}
       {isUser && (
         <div className='flex items-start max-w-[80%]'>
-          <div className='bg-[#5f6fff] text-white px-4 py-2 rounded-2xl rounded-tr-none shadow-sm text-sm sm:text-base leading-relaxed'>
+          <div className='bg-gradient-to-br from-[#5f6fff] to-[#4052d6] dark:from-[#2e3a8c] dark:to-[#1e265c] text-white px-4 py-2 rounded-2xl rounded-tr-none shadow-md text-sm sm:text-base leading-relaxed transition-colors'>
             {message.isImage ? (
               <img
                 src={message.content}
@@ -48,14 +48,14 @@ Prism.highlightAll()
             ) : (
               message.content
             )}
-            <p className='text-[10px] text-gray-200 mt-1 text-right'>
+            <p className='text-[10px] text-gray-200 dark:text-gray-300 mt-1 text-right'>
               {moment(message.timestamp).fromNow()}
             </p>
           </div>
           <img
             src={chatassets.user_icon}
             alt='User'
-            className='w-9 h-9 rounded-full ml-3 shadow-sm border border-[#5f6fff]/30'
+            className='w-9 h-9 rounded-full ml-3 shadow-sm border border-[#5f6fff]/30 dark:border-[#5f6fff]/50 bg-white dark:bg-gray-800'
           />
         </div>
       )}

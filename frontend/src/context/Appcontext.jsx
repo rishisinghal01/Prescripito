@@ -57,8 +57,20 @@ const AppContextProvider = (props) => {
       setuserData(false)
     }
   }, [token])
+  const [theme, setTheme] = useState(localStorage.getItem("theme") ? localStorage.getItem("theme") : "light");
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [theme]);
+
   const value = {
-    doctors, currencysymbol, token, settoken, backendurl, userData, setuserData, loadUserData,getDoctordata
+    doctors, currencysymbol, token, settoken, backendurl, userData, setuserData, loadUserData, getDoctordata, theme, setTheme
   };
   return (
     <AppContext.Provider value={value}>

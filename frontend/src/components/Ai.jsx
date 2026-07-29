@@ -58,7 +58,7 @@ const Ai = () => {
       )}
 
       {/* ✅ Fixed Layout (no X-scroll) */}
-      <div className="flex w-full h-[calc(100vh-80px)] bg-white overflow-hidden">
+      <div className="flex w-full h-[calc(100vh-80px)] bg-white dark:bg-[#0f172a] transition-colors duration-300 overflow-hidden">
         <Sidebar isMenuopen={isMenuopen} setisMenuopen={setisMenuopen} />
         <div className="flex-1 overflow-hidden">
           <Routes>

@@ -49,36 +49,36 @@ useEffect(()=>{
   };
 
   return (
-    <form onSubmit={submitHandler} className='min-h-[80vh] flex items-center'>
-      <div className='flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg'>
-        <p className='text-2xl font-semibold'>{state === 'Sign Up' ? "Create Account" : "Login"}</p>
+    <form onSubmit={submitHandler} className='min-h-[80vh] flex items-center transition-colors duration-300'>
+      <div className='flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border border-gray-200 dark:border-gray-700 rounded-xl text-zinc-600 dark:text-gray-300 text-sm shadow-lg dark:shadow-2xl bg-white dark:bg-gray-800 transition-colors'>
+        <p className='text-2xl font-semibold text-gray-800 dark:text-white'>{state === 'Sign Up' ? "Create Account" : "Login"}</p>
         <p>Please {state === "Sign Up" ? "sign up" : "log in"} to book an appointment</p>
 
         {state === "Sign Up" && (
           <div className='w-full'>
-            <p>Full Name</p>
-            <input className='border border-zinc-300 rounded w-full p-2 mt-1' type="text" onChange={(e) => setname(e.target.value)} value={name} required />
+            <p className='dark:text-gray-400'>Full Name</p>
+            <input className='border border-zinc-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded w-full p-2 mt-1 focus:outline-none focus:border-[#5f6fff] transition-colors' type="text" onChange={(e) => setname(e.target.value)} value={name} required />
           </div>
         )}
 
         <div className='w-full'>
-          <p>Email</p>
-          <input className='border border-zinc-300 rounded w-full p-2 mt-1' type="email" onChange={(e) => setemail(e.target.value)} value={email} required />
+          <p className='dark:text-gray-400'>Email</p>
+          <input className='border border-zinc-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded w-full p-2 mt-1 focus:outline-none focus:border-[#5f6fff] transition-colors' type="email" onChange={(e) => setemail(e.target.value)} value={email} required />
         </div>
 
         <div className='w-full'>
-          <p>Password</p>
-          <input className='border border-zinc-300 rounded w-full p-2 mt-1' type="password" onChange={(e) => setpassword(e.target.value)} value={password} required />
+          <p className='dark:text-gray-400'>Password</p>
+          <input className='border border-zinc-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded w-full p-2 mt-1 focus:outline-none focus:border-[#5f6fff] transition-colors' type="password" onChange={(e) => setpassword(e.target.value)} value={password} required />
         </div>
 
-        <button type='submit' className='bg-[#5f6fff] text-white w-full py-2 rounded-md text-base'>
+        <button type='submit' className='bg-[#5f6fff] dark:bg-blue-600 hover:bg-[#4a58e0] dark:hover:bg-blue-500 text-white w-full py-2 rounded-md text-base mt-2 shadow-sm transition-colors'>
           {state === 'Sign Up' ? "Create Account" : "Login"}
         </button>
 
         {state === "Sign Up" ? (
-          <p>Already have an account? <span onClick={() => setstate("Login")} className='text-[#5f6fff] underline cursor-pointer'>Login Here</span></p>
+          <p className='mt-2'>Already have an account? <span onClick={() => setstate("Login")} className='text-[#5f6fff] dark:text-blue-400 underline cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors'>Login Here</span></p>
         ) : (
-          <p>New here? <span onClick={() => setstate("Sign Up")} className='text-[#5f6fff] underline cursor-pointer'>Create Account</span></p>
+          <p className='mt-2'>New here? <span onClick={() => setstate("Sign Up")} className='text-[#5f6fff] dark:text-blue-400 underline cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors'>Create Account</span></p>
         )}
       </div>
     </form>
