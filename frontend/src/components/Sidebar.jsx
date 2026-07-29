@@ -28,7 +28,7 @@ const Sidebar = ({ setisMenuopen, isMenuopen }) => {
     }
   }
   return (
-    <div className={`flex flex-col h-full min-w-72 md:min-w-80 p-5 border-r border-[#5f6fff]/20 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md transition-all duration-500 rounded-tr-3xl shadow-[5px_0_30px_rgba(95,111,255,0.08)] max-md:absolute left-0 z-20 ${!isMenuopen && "max-sm:-translate-x-full "}`}>
+    <div className={`print:hidden flex flex-col h-full min-w-72 md:min-w-80 p-5 border-r border-[#5f6fff]/20 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md transition-all duration-500 rounded-tr-3xl shadow-[5px_0_30px_rgba(95,111,255,0.08)] max-md:absolute left-0 z-20 ${!isMenuopen && "max-sm:-translate-x-full "}`}>
 
       {/* --- New Chat Button --- */}
       <button  onClick={createNewChat} className='flex justify-center items-center w-full py-2 mt-10 text-white bg-[#5f6fff] hover:bg-[#4b58e0] dark:bg-blue-600 dark:hover:bg-blue-500 text-sm rounded-lg cursor-pointer shadow-md transition-all font-medium'>

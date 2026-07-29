@@ -1,9 +1,20 @@
 import fs from 'fs';
 import imagekit from "../config/imagekit.js";
-// import { geminiModel } from "../config/gemini.js";
 import chatModel from "../models/chatModel.js";
 import userModel from "../models/userModel.js";
+import doctorModel from "../models/doctorModel.js";
 import axios from 'axios'
+
+const getDoctorsString = async () => {
+  try {
+    const doctors = await doctorModel.find({}, 'name speciality');
+    if (!doctors || doctors.length === 0) return "No doctors available.";
+    return doctors.map(d => `${d.name} (${d.speciality})`).join(", ");
+  } catch (err) {
+    return "Error fetching doctors.";
+  }
+};
+
 const textMessageController = async (req, res) => {
   try {
     const userId = req.userId;
@@ -23,6 +34,12 @@ const textMessageController = async (req, res) => {
       timestamp: Date.now(),
     });
 
+    const doctorsString = await getDoctorsString();
+    const systemPrompt = `You are a general health and wellness information assistant.
+Educational info only. No diagnosis. No prescriptions.
+CRITICAL INSTRUCTION: If the user's symptoms require a specialist, you MUST explicitly recommend one of our available doctors and tell the user to book an appointment with them on our platform.
+Our Available Doctors: ${doctorsString}`;
+
     let aiText = "";
     try {
       const response = await axios.post(
@@ -33,12 +50,7 @@ const textMessageController = async (req, res) => {
               role: "user",
               parts: [
                 {
-                  text: `
-You are a general health and wellness information assistant.
-Educational info only. No diagnosis. No prescriptions.
-
-User: ${prompt}
-                  `,
+                  text: `${systemPrompt}\n\nUser: ${prompt}`,
                 },
               ],
             },
@@ -79,7 +91,7 @@ User: ${prompt}
                   {
                     model: model,
                     messages: [
-                      { role: "system", content: "You are a general health and wellness information assistant. Educational info only. No diagnosis. No prescriptions." },
+                      { role: "system", content: systemPrompt },
                       { role: "user", content: prompt }
                     ]
                   },
@@ -155,6 +167,10 @@ const analyzeImageController = async (req, res) => {
     };
 
     chat.messages.push(userMsg);
+    const doctorsString = await getDoctorsString();
+    const systemPrompt = `You are a professional medical image analysis assistant. Provide a detailed, educational analysis of the provided medical image (e.g., MRI, X-Ray, Skin condition). Point out visible anomalies if any. Disclaimer: State that this is for educational purposes and not a clinical diagnosis. 
+CRITICAL INSTRUCTION: If you detect an anomaly that requires a specialist, you MUST explicitly recommend one of our available doctors and tell the user to book an appointment with them on our platform. 
+Our Available Doctors: ${doctorsString}`;
 
     // 2️⃣ CALL OPENROUTER VISION API FOR REAL MEDICAL ANALYSIS
     let aiText = "";
@@ -163,38 +179,57 @@ const analyzeImageController = async (req, res) => {
         throw new Error("Missing OpenRouter API Key");
       }
       
-      // Ensure the image string has the proper base64 prefix
       const formattedBase64 = base64Image.startsWith("data:image") 
         ? base64Image 
         : `data:image/jpeg;base64,${base64Image}`;
 
-      const response = await axios.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-          model: "google/gemma-4-26b-a4b-it:free", // Free Vision-capable model from 2026 screenshot URL slug
-          messages: [
-            { 
-              role: "system", 
-              content: "You are a professional medical image analysis assistant. Provide a detailed, educational analysis of the provided medical image (e.g., MRI, X-Ray, Skin condition). Point out visible anomalies if any. Disclaimer: State that this is for educational purposes and not a clinical diagnosis." 
+      const freeVisionModels = [
+        "google/gemini-2.0-flash-lite-preview-02-05:free",
+        "google/gemini-2.0-pro-exp-02-05:free",
+        "meta-llama/llama-3.2-11b-vision-instruct:free",
+        "qwen/qwen-vl-plus:free",
+        "google/gemma-4-26b-a4b-it:free"
+      ];
+
+      let dsResponse = null;
+      let lastError = null;
+
+      for (const model of freeVisionModels) {
+        try {
+          dsResponse = await axios.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            {
+              model: model,
+              messages: [
+                { role: "system", content: systemPrompt },
+                { 
+                  role: "user", 
+                  content: [
+                    { type: "text", text: prompt || "Please analyze this medical image in detail." },
+                    { type: "image_url", image_url: { url: formattedBase64 } }
+                  ] 
+                }
+              ]
             },
-            { 
-              role: "user", 
-              content: [
-                { type: "text", text: prompt || "Please analyze this medical image in detail." },
-                { type: "image_url", image_url: { url: formattedBase64 } }
-              ] 
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+              }
             }
-          ]
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
-          }
+          );
+          break; // Break if successful!
+        } catch (err) {
+          console.log(`Vision Model ${model} Failed:`, err.response?.data?.error?.message || err.message);
+          lastError = err;
         }
-      );
+      }
+
+      if (!dsResponse) {
+        throw lastError;
+      }
       
-      aiText = response.data.choices[0].message.content;
+      aiText = dsResponse.data.choices[0].message.content;
     } catch (apiError) {
       console.log("Vision API Error:", apiError.response?.data?.error?.message || apiError.message);
       aiText = `Image Analysis Failed: ${apiError.response?.data?.error?.message || apiError.message}. Please try again later.`;

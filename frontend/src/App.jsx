@@ -18,7 +18,7 @@ import Ai from "./components/Ai";
 const App = () => {
   const location = useLocation(); // 👈 detect current route
 
-  const isAiPage = location.pathname === "/ai"; // 👈 clean boolean
+  const isAiPage = location.pathname.startsWith("/ai"); // 👈 covers /ai, /ai/chatbot, etc.
 
   return (
     <div className="">
@@ -38,7 +38,7 @@ const App = () => {
           <Route path="/my-profile" element={<Myprofile />} />
           <Route path="/my-appointments" element={<MyAppointments />} />
           <Route path="/appointment/:docId" element={<Appointment />} />
-          <Route path="/ai" element={<Ai />} />
+          <Route path="/ai/*" element={<Ai />} />
         </Routes>
 
         {/* ✅ Floating AI icon on all pages except /ai */}

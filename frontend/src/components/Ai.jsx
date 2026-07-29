@@ -58,9 +58,9 @@ const Ai = () => {
       )}
 
       {/* ✅ Fixed Layout (no X-scroll) */}
-      <div className="flex w-full h-[calc(100vh-80px)] bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-slate-900 dark:via-[#0f172a] dark:to-indigo-950 bg-animated-mesh transition-colors duration-300 overflow-hidden relative">
+      <div className="flex w-full h-[calc(100vh-80px)] print:h-auto bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-slate-900 dark:via-[#0f172a] dark:to-indigo-950 bg-animated-mesh transition-colors duration-300 overflow-hidden print:overflow-visible relative">
         <Sidebar isMenuopen={isMenuopen} setisMenuopen={setisMenuopen} />
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden print:overflow-visible">
           <Routes>
             <Route index element={<Navigate to="chatbot" replace />} />
             <Route path="chatbot" element={<Chatbox />} />
