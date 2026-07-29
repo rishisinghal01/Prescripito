@@ -55,30 +55,30 @@ const {setaToken}= useContext(AdminContext)
   return (
     <form
       onSubmit={submitHandler}
-      className="min-h-[80vh] flex items-center justify-center"
+      className="min-h-[80vh] flex items-center justify-center transition-colors duration-300"
     >
-      <div className="flex flex-col gap-3 p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-[#5E5E5E] text-sm shadow-lg bg-white">
-        <p className="text-2xl font-semibold text-center mb-4">
-          <span className="text-[#5f6fff]">{state}</span> Login
+      <div className="flex flex-col gap-3 p-8 min-w-[340px] sm:min-w-96 border border-gray-200 dark:border-gray-700 rounded-xl text-[#5E5E5E] dark:text-gray-300 text-sm shadow-lg dark:shadow-2xl bg-white dark:bg-gray-800 transition-colors">
+        <p className="text-2xl font-semibold text-center mb-4 dark:text-white">
+          <span className="text-[#5f6fff] dark:text-blue-400">{state}</span> Login
         </p>
 
         <div className="w-full">
-          <p>Email</p>
+          <p className="dark:text-gray-400">Email</p>
           <input
             onChange={(e) => setEmail(e.target.value)}
             value={email}
-            className="border border-[#DADADA] rounded w-full p-2 mt-1"
+            className="border border-[#DADADA] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded w-full p-2 mt-1 focus:outline-none focus:border-[#5f6fff] transition-colors"
             type="email"
             required
           />
         </div>
 
         <div className="w-full">
-          <p>Password</p>
+          <p className="dark:text-gray-400">Password</p>
           <input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
-            className="border border-[#DADADA] rounded w-full p-2 mt-1"
+            className="border border-[#DADADA] dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded w-full p-2 mt-1 focus:outline-none focus:border-[#5f6fff] transition-colors"
             type="password"
             required
           />
@@ -86,7 +86,7 @@ const {setaToken}= useContext(AdminContext)
 
         <button
           type="submit"
-          className="bg-[#5f6fff] text-white w-full py-2 mt-2 rounded-md text-base hover:bg-[#4e57ff] transition-all"
+          className="bg-[#5f6fff] dark:bg-blue-600 text-white w-full py-2 mt-2 rounded-md text-base hover:bg-[#4e57ff] dark:hover:bg-blue-500 transition-all shadow-sm"
         >
           Login
         </button>
@@ -95,7 +95,7 @@ const {setaToken}= useContext(AdminContext)
           <p className="text-center mt-3">
             Doctor Login?{" "}
             <span
-              className="text-[#5f6fff] underline cursor-pointer"
+              className="text-[#5f6fff] dark:text-blue-400 underline cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               onClick={() => setState("Doctor")}
             >
               Click Here
@@ -105,7 +105,7 @@ const {setaToken}= useContext(AdminContext)
           <p className="text-center mt-3">
             Admin Login?{" "}
             <span
-              className="text-[#5f6fff] underline cursor-pointer"
+              className="text-[#5f6fff] dark:text-blue-400 underline cursor-pointer hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               onClick={() => setState("Admin")}
             >
               Click Here

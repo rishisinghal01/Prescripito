@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useState, useEffect } from "react";
 
 export const AppContext = createContext();
 
@@ -14,8 +14,20 @@ const AppcontextProvider = (props) => {
     const dateArray = slotDate.split("_");
     return dateArray[0]+" "+months[Number(dateArray[1])] +" "+ dateArray[2]
   }
+  const [theme, setTheme] = useState(localStorage.getItem("theme") ? localStorage.getItem("theme") : "light");
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [theme]);
+
   const value = {
-    calculateAge,slotdateFormat
+    calculateAge, slotdateFormat, theme, setTheme
   };
 
 
