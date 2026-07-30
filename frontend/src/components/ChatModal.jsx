@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { AppContext } from '../context/AppContext';
+import { AppContext } from '../context/Appcontext';
 
 const ChatModal = ({ isOpen, onClose, appointmentId, doctorName }) => {
   const { backendurl, token, userData } = useContext(AppContext);
