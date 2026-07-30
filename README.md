@@ -58,47 +58,47 @@ The application is built using a micro-frontend-like architecture, decoupled int
 graph TD
     %% Portals
     subgraph Clients ["Client Applications"]
-        P[Patient Web App]
-        A[Admin Dashboard]
-        D[Doctor Panel]
+        P["Patient Web App"]
+        A["Admin Dashboard"]
+        D["Doctor Panel"]
     end
 
     %% Backend Service
     subgraph Server ["Express.js Backend API"]
-        API[RESTful Endpoints]
-        WS[Socket.io Server]
-        Auth[JWT Middleware]
+        API["RESTful Endpoints"]
+        WS["Socket.io Server"]
+        Auth["JWT Middleware"]
     end
 
     %% Databases
     subgraph Data ["Databases & Storage"]
-        DB[(MongoDB)]
-        Cloud[Cloudinary / ImageKit]
+        DB[("MongoDB")]
+        Cloud["Cloudinary & ImageKit"]
     end
 
     %% External Services
     subgraph Integrations ["Third-Party Services"]
-        Gemini[Google Gemini API]
-        HF[Hugging Face SDXL]
-        Stripe[Stripe Payments]
-        Razorpay[Razorpay Gateway]
+        Gemini["Google Gemini API"]
+        HF["Hugging Face SDXL"]
+        Stripe["Stripe Payments"]
+        Razorpay["Razorpay Gateway"]
     end
 
     %% Communication Flows
-    P -->|HTTP / WSS| API
-    P -->|WSS| WS
-    A -->|HTTP| API
-    D -->|HTTP / WSS| API
-    D -->|WSS| WS
+    P -->|"HTTP / WSS"| API
+    P -->|"WSS"| WS
+    A -->|"HTTP"| API
+    D -->|"HTTP / WSS"| API
+    D -->|"WSS"| WS
     
     API --> Auth
     Auth --> DB
     
-    API -->|Media Uploads| Cloud
-    API -->|AI Queries| Gemini
-    API -->|Image Gen| HF
-    API -->|Transactions| Stripe
-    API -->|Transactions| Razorpay
+    API -->|"Media Uploads"| Cloud
+    API -->|"AI Queries"| Gemini
+    API -->|"Image Gen"| HF
+    API -->|"Transactions"| Stripe
+    API -->|"Transactions"| Razorpay
 ```
 
 ---
