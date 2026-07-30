@@ -1,41 +1,71 @@
-# Prescripito 🩺
+<div align="center">
+  <img src="./backend/upload_area.png" alt="Prescripito Logo" width="120" />
+  
+  # Prescripito 🩺
+  
+  **A Comprehensive Telemedicine & Appointment Booking Platform**
 
-Prescripito is a comprehensive, modern healthcare platform and clinic appointment booking system featuring an integrated **AI Assistant** (for medical queries and image generation), a dedicated **Admin Dashboard**, and a **Doctor Portal**.
+  [![React](https://img.shields.io/badge/React-19.0-blue.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
+  [![Node.js](https://img.shields.io/badge/Node.js-Backend-green.svg?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248.svg?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+  [![Socket.io](https://img.shields.io/badge/Socket.io-Realtime-black.svg?style=for-the-badge&logo=socketdotio)](https://socket.io/)
+  [![Gemini AI](https://img.shields.io/badge/Gemini_AI-Integrated-orange.svg?style=for-the-badge)](https://deepmind.google/technologies/gemini/)
+</div>
 
-Built on the MERN stack, the application splits into three decoupled components:
-1. **Frontend (Patient Portal)**: A sleek, interactive React web app for patients to find doctors, book appointments, make payments, and access the AI Assistant.
-2. **Admin & Doctor Panel**: A React web app providing complete operational oversight for administrators (managing doctors, checking reports) and doctor-specific dashboards (managing appointment logs, updating profile fees/availability).
-3. **Backend API**: An Express.js server utilizing MongoDB/Mongoose, integrated with payment gateways (Stripe, Razorpay), cloud storage (Cloudinary, ImageKit), and AI APIs (Google Gemini, Hugging Face).
+<br />
+
+> **🎓 Academic Project Note:** This project was developed as a comprehensive Final Year College Assignment to demonstrate mastery over full-stack web development (MERN), real-time communication protocols (WebSockets), Payment Gateway integrations, and modern AI API capabilities.
+
+## 📖 Table of Contents
+- [About the Project](#-about-the-project)
+- [System Architecture](#-system-architecture)
+- [Key Features](#-key-features)
+  - [Patient Portal](#1-patient-portal-frontend)
+  - [Doctor Portal](#2-doctor-portal)
+  - [Admin Panel](#3-admin-portal)
+- [Tech Stack](#-tech-stack)
+- [Installation & Setup](#-installation--setup)
+- [Environment Variables](#-environment-variables)
+- [Disclaimer](#-disclaimer)
+
+---
+
+## 🚀 About the Project
+
+**Prescripito** is a modern healthcare platform that bridges the gap between patients and medical professionals. It eliminates the hassle of physical clinic queues by providing a seamless, digital-first experience for booking appointments, consulting with doctors in real-time, and receiving digital prescriptions. 
+
+Additionally, it integrates a smart **AI Health Assistant** to empower patients with preliminary health education and visual anatomical references.
 
 ---
 
 ## 🏗️ System Architecture
 
-The workflow and communication channels between components are illustrated below:
+The application is built using a micro-frontend-like architecture, decoupled into three distinct services communicating via a centralized REST API and WebSockets.
 
 ```mermaid
 graph TD
     %% Portals
-    subgraph Clients ["Client Portals"]
+    subgraph Clients ["Client Applications"]
         P[Patient Web App]
         A[Admin Dashboard]
         D[Doctor Panel]
     end
 
     %% Backend Service
-    subgraph Server ["Express.js Backend"]
-        API[API Router / Server]
-        Auth[Auth Middleware / JWT]
+    subgraph Server ["Express.js Backend API"]
+        API[RESTful Endpoints]
+        WS[Socket.io Server]
+        Auth[JWT Middleware]
     end
 
     %% Databases
     subgraph Data ["Databases & Storage"]
-        DB[(MongoDB Database)]
+        DB[(MongoDB)]
         Cloud[Cloudinary / ImageKit]
     end
 
     %% External Services
-    subgraph Integrations ["Third-Party Integrations"]
+    subgraph Integrations ["Third-Party Services"]
         Gemini[Google Gemini API]
         HF[Hugging Face SDXL]
         Stripe[Stripe Payments]
@@ -43,108 +73,136 @@ graph TD
     end
 
     %% Communication Flows
-    P -->|API Requests| API
-    A -->|API Requests| API
-    D -->|API Requests| API
+    P -->|HTTP / WSS| API
+    P -->|WSS| WS
+    A -->|HTTP| API
+    D -->|HTTP / WSS| API
+    D -->|WSS| WS
     
     API --> Auth
     Auth --> DB
     
-    API -->|Image Uploads| Cloud
-    API -->|Consultation Info| Gemini
-    API -->|AI Art Generation| HF
-    API -->|Credit Topups| Stripe
-    API -->|Appointment Payments| Razorpay
+    API -->|Media Uploads| Cloud
+    API -->|AI Queries| Gemini
+    API -->|Image Gen| HF
+    API -->|Transactions| Stripe
+    API -->|Transactions| Razorpay
 ```
 
 ---
 
-## 🌟 Key Features
+## ✨ Key Features
 
 ### 1. Patient Portal (Frontend)
-- **User Authentication**: Secure signup and login with profile management (editable address, birthday, gender, and profile photo uploads).
-- **Doctor Discovery**: Interactive filtering of doctors by specialities (General Physician, Gynecologist, Dermatologist, Pediatrician, Neurologist, Gastroenterologist).
-- **Slot-Booking System**: Appointment booking with interactive date picker and hourly slot selection.
-- **Appointment Registry**: Track appointment history, cancel bookings, and complete checkout.
-- **Payment Gateways**: Direct payment support using **Razorpay** for consultations.
-- **🤖 Health AI Assistant**:
-  - **Text Chat**: Get informational, educational wellness answers (powered by Gemini API). Costs 1 credit.
-  - **Image Generator**: Create custom health diagrams or descriptive images using Stable Diffusion XL. Costs 2 credits.
-  - **Stripe Subscriptions**: Purchase Credit packs (Basic, Pro, Premium) to replenish assistant credits.
-  - **Community Page**: Browse public artwork/diagrams shared by other patients in the community.
+Designed with a focus on User Experience (UX) and accessibility.
+*   **Authentication & Profiles:** Secure JWT-based login with profile photo uploads and personal detail management.
+*   **Smart Discovery:** Filter doctors dynamically based on specialities (e.g., Neurologist, Dermatologist, Pediatrician).
+*   **Real-Time Telemedicine Chat:** A built-in WhatsApp-like chat allowing patients to text doctors and instantly upload medical reports (PDFs) or X-rays (Images).
+*   **Seamless Booking & Payments:** Interactive slot selection integrated directly with **Razorpay** for secure, one-click checkouts.
+*   **🤖 AI Health Assistant:**
+    *   **Medical Chatbot:** Ask wellness questions and get intelligent answers powered by Google's Gemini API.
+    *   **Medical Image Generator:** Generate visual health references using Hugging Face Stable Diffusion XL.
+    *   **Credit System:** Monetized via **Stripe** subscriptions (Basic, Pro, Premium tiers) for AI usage.
 
-### 2. Admin Portal
-- **Dashboard Overview**: View system statistics including total registered doctors, booked appointments, and unique users, along with recent booking history.
-- **Doctor Management**: Onboard new doctors with profile photos, specialities, education, consultation fees, and experience details.
-- **Availability Toggle**: Easily toggle doctor availability, instantly syncing with client searches on the patient portal.
-- **Appointment Actions**: Track and cancel scheduling requests system-wide.
+### 2. Doctor Portal
+A dedicated workspace for medical professionals to manage their virtual clinic.
+*   **Virtual Consultation Room:** Engage with patients via Real-Time Chat. View patient-uploaded reports securely.
+*   **Auto-Generate Digital Prescriptions:** An advanced built-in tool where doctors input *Symptoms*, *Diagnosis*, and *Medicines*. The system instantly renders a professional PDF Prescription and delivers it to the patient.
+*   **Revenue & Metrics Dashboard:** Track total appointments, unique patients, and overall earnings visually.
+*   **Availability Management:** Instantly mark profiles as available or unavailable, immediately reflecting on the patient app.
 
-### 3. Doctor Portal
-- **Doctor Dashboard**: View summary of personal earnings, total appointments, list of unique patients, and chronological list of bookings.
-- **Booking Management**: Mark appointments as complete or cancel appointments.
-- **Profile Configuration**: Set consultant fees, update clinics/offices, change availability, and configure personal timing slots.
-
----
-
-## 🛠️ Tech Stack & Core Dependencies
-
-### Backend
-- **Core Platform**: Node.js & Express.js
-- **Database**: MongoDB & Mongoose
-- **Image Cloud Storage**: Cloudinary (profile uploads) & ImageKit (AI image assets)
-- **Gateways**: Stripe SDK & Razorpay SDK
-- **AI Integrations**: Google Generative AI (`gemini-2.0-flash` endpoint) & Hugging Face Hub API (Stable Diffusion XL)
-- **Security & Utilities**: JSON Web Token (JWT) auth, BCrypt, Multer (multipart form handling), Svix (webhook verification), and Validator.
-
-### Frontends (Patient & Admin)
-- **UI Framework**: React 19 (Vite build system)
-- **Styling**: Tailwind CSS v4
-- **Routing**: React Router DOM v7
-- **Toasts**: React Toastify & React Hot Toast
+### 3. Admin Portal
+A centralized control room for hospital administrators.
+*   **System Analytics:** High-level dashboard showcasing total platform revenue, registered doctors, and overall user engagement.
+*   **Doctor Onboarding:** Securely add new doctors, set their consultation fees, assign specialities, and upload their credentials.
+*   **Global Oversight:** View and manage all appointments happening across the platform in real-time.
 
 ---
 
-## 📁 Repository Structure
+## 🛠️ Tech Stack
 
-```text
-Prescripito/
-├── backend/                  # Node.js Server & APIs
-│   ├── config/               # Database and API clients (Mongoose, Cloudinary, ImageKit)
-│   ├── controllers/          # Request handling logic (Admin, Doctor, Patient, Chat, Payments)
-│   ├── middlewares/          # JWT check & multer configurations
-│   ├── models/               # MongoDB models (User, Doctor, Appointment, Chat, Transaction)
-│   ├── routes/               # API endpoints
-│   ├── server.js             # Main server entrypoint
-│   └── package.json
-│
-├── frontend/                 # Patient Portal Web App
-│   ├── src/
-│   │   ├── assets/           # UI media, logos, and icons
-│   │   ├── components/       # UI Components (Navbar, Chatbox, SpecialityMenu, etc.)
-│   │   ├── context/          # React Context (Appcontext, Chatcontext)
-│   │   ├── pages/            # View pages (Home, Appointment, AI, Login, Myprofile)
-│   │   └── main.jsx
-│   └── package.json
-│
-└── admin/                    # Admin & Doctor Dashboard Web App
-    ├── src/
-    │   ├── components/       # Sidebars and topbars
-    │   ├── context/          # Combined context state managers
-    │   ├── pages/
-    │   │   ├── Admin/        # Admin routes (Dashboard, AddDoctor, AllAppointments)
-    │   │   └── Doctors/      # Doctor routes (DoctorDashboard, DoctorProfile, Appointments)
-    │   └── main.jsx
-    └── package.json
+### Frontend Architecture
+*   **Library:** React 19
+*   **Build Tool:** Vite
+*   **Styling:** Tailwind CSS v4 & Glassmorphism UI principles
+*   **Routing:** React Router DOM v7
+*   **State Management:** React Context API
+*   **Real-Time:** Socket.io-client
+*   **PDF Generation:** jsPDF & jspdf-autotable
+
+### Backend Architecture
+*   **Runtime:** Node.js
+*   **Framework:** Express.js
+*   **Database:** MongoDB with Mongoose ODM
+*   **Authentication:** JSON Web Tokens (JWT) & bcrypt for password hashing
+*   **Real-Time Engine:** Socket.io
+*   **File Handling:** Multer & Cloudinary SDK
+
+### Third-Party APIs
+*   **Payments:** Stripe (Credit Top-ups) & Razorpay (Consultation Fees)
+*   **Artificial Intelligence:** Google Gemini (`gemini-2.0-flash`) & Hugging Face (`Stable-Diffusion-XL`)
+
+---
+
+## 💻 Installation & Setup
+
+Follow these steps to run the project locally on your machine.
+
+### Prerequisites
+*   Node.js (v18+)
+*   MongoDB Instance (Local or Atlas)
+*   API Keys for Stripe, Razorpay, Cloudinary, and Gemini.
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/Prescripito.git
+cd Prescripito
+```
+
+### 2. Install Dependencies
+You must install the NPM packages for all three workspaces:
+```bash
+# Backend
+cd backend && npm install
+
+# Patient Frontend
+cd ../frontend && npm install
+
+# Admin/Doctor Dashboard
+cd ../admin && npm install
+```
+
+### 3. Start the Development Servers
+Open three separate terminal windows/tabs:
+
+**Terminal 1 (Backend):**
+```bash
+cd backend
+npm run server
+# Runs on http://localhost:4000
+```
+
+**Terminal 2 (Patient Portal):**
+```bash
+cd frontend
+npm run dev
+# Runs on http://localhost:5173
+```
+
+**Terminal 3 (Admin Portal):**
+```bash
+cd admin
+npm run dev
+# Runs on http://localhost:5174
 ```
 
 ---
 
-## ⚙️ Configuration Setup
+## 🔐 Environment Variables
 
-Before running the application, create `.env` files in each service directory.
+You need to create `.env` files in the respective directories.
 
-### 🔑 Backend Configuration (`backend/.env`)
-Create a file at `backend/.env` containing:
+### `backend/.env`
 ```env
 PORT=4000
 MONGODB_URI=your_mongodb_connection_string
@@ -175,68 +233,18 @@ GEMINI_API_KEY=your_gemini_api_key
 HF_API_KEY=your_huggingface_api_token
 ```
 
-### 🔑 Patient Portal Configuration (`frontend/.env`)
-Create a file at `frontend/.env` containing:
+### `frontend/.env`
 ```env
 VITE_BACKEND_URL=http://localhost:4000
 VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
 
-### 🔑 Admin Portal Configuration (`admin/.env`)
-Create a file at `admin/.env` containing:
+### `admin/.env`
 ```env
 VITE_BACKEND_URL=http://localhost:4000
 ```
 
 ---
 
-## 🚀 Running the Application
-
-Follow these steps to run all three services locally:
-
-### Step 1: Clone and Install Dependencies
-Navigate into each directory and install packages:
-
-```bash
-# Install backend packages
-cd backend
-npm install
-
-# Install patient portal packages
-cd ../frontend
-npm install
-
-# Install admin/doctor portal packages
-cd ../admin
-npm install
-```
-
-### Step 2: Start the Development Servers
-
-Use separate terminal terminals or tabs to run the services:
-
-#### 1. Launch Backend API
-```bash
-cd backend
-npm run server
-# Server boots up on http://localhost:4000
-```
-
-#### 2. Launch Patient Web App
-```bash
-cd frontend
-npm run dev
-# App boots up on http://localhost:5173 (or next free port)
-```
-
-#### 3. Launch Admin/Doctor Control Panel
-```bash
-cd admin
-npm run dev
-# App boots up on http://localhost:5174 (or next free port)
-```
-
----
-
-> [!IMPORTANT]
-> **Health Information Disclaimer**: The integrated AI Assistant is meant strictly for educational and wellness informational support. It does not perform diagnoses, prescribe medications, or replace formal medical consultations. Always seek professional advice for any health conditions.
+## ⚠️ Disclaimer
+> **Health Information Disclaimer:** The integrated AI Assistant is meant strictly for educational and wellness informational support. It does not perform diagnoses, prescribe medications, or replace formal medical consultations. The platform built is purely for academic demonstration. Always seek professional advice for any health conditions.
