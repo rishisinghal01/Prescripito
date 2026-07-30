@@ -28,9 +28,10 @@ export const uploadMessageAttachment = async (req, res) => {
     // Save file locally to bypass Cloudinary PDF delivery block
     const uniqueFileName = saveFileLocally(file);
 
-    // Assuming backend runs on port 4000
-    const port = process.env.PORT || 4000;
-    const backendUrl = `http://localhost:${port}`;
+    // Determine backend URL dynamically based on the request
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['x-forwarded-host'] || req.get('host');
+    const backendUrl = `${protocol}://${host}`;
     const fileUrl = `${backendUrl}/uploads/${uniqueFileName}`;
 
     res.json({ 
