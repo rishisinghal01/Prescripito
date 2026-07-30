@@ -1,15 +1,27 @@
 <div align="center">
   <img src="./backend/upload_area.png" alt="Prescripito Logo" width="120" />
   
-  # Prescripito 🩺
+  # 🩺 Prescripito
   
-  **A Comprehensive Telemedicine & Appointment Booking Platform**
+  **The Next-Generation Telemedicine & Appointment Booking Platform**
 
-  [![React](https://img.shields.io/badge/React-19.0-blue.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
-  [![Node.js](https://img.shields.io/badge/Node.js-Backend-green.svg?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
-  [![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248.svg?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
-  [![Socket.io](https://img.shields.io/badge/Socket.io-Realtime-black.svg?style=for-the-badge&logo=socketdotio)](https://socket.io/)
-  [![Gemini AI](https://img.shields.io/badge/Gemini_AI-Integrated-orange.svg?style=for-the-badge)](https://deepmind.google/technologies/gemini/)
+  <p align="center">
+    <a href="https://prescripito.vercel.app" target="_blank">
+      <img src="https://img.shields.io/badge/🚀_Visit_Patient_Portal-2563EB?style=for-the-badge&logoColor=white" alt="Patient Portal" />
+    </a>
+    <a href="https://prescripito-admin.vercel.app" target="_blank">
+      <img src="https://img.shields.io/badge/🔐_Visit_Admin_Portal-10B981?style=for-the-badge&logoColor=white" alt="Admin Portal" />
+    </a>
+  </p>
+
+  [![React](https://img.shields.io/badge/React-19.0-blue.svg?style=flat-square&logo=react)](https://reactjs.org/)
+  [![Node.js](https://img.shields.io/badge/Node.js-Backend-green.svg?style=flat-square&logo=nodedotjs)](https://nodejs.org/)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248.svg?style=flat-square&logo=mongodb)](https://www.mongodb.com/)
+  [![Socket.io](https://img.shields.io/badge/Socket.io-Realtime-black.svg?style=flat-square&logo=socketdotio)](https://socket.io/)
+  [![Gemini AI](https://img.shields.io/badge/Gemini_AI-Integrated-orange.svg?style=flat-square)](https://deepmind.google/technologies/gemini/)
+  
+  <br />
+  <em>Bridging the gap between patients and medical professionals with real-time consultations, AI assistance, and seamless bookings.</em>
 </div>
 
 <br />
