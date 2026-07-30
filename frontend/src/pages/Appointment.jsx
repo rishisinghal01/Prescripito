@@ -5,7 +5,6 @@ import { assets } from '../assets/assets_frontend/assets'
 import RelatedDoctors from '../components/RelatedDoctors'
 import { toast } from 'react-toastify'
 import axios from 'axios'
-import appointmentModel from '../../../backend/models/appointmentModel'
 
 const Appointment = () => {
   const { docId } = useParams()
