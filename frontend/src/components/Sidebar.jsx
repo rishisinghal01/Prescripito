@@ -126,13 +126,27 @@ const Sidebar = ({ setisMenuopen, isMenuopen }) => {
       </div>
 
       {/* --- User Section --- */}
-<div className='flex items-center gap-3 p-3 mt-5 border border-gray-200 dark:border-gray-700 rounded-md cursor-pointer group hover:border-[#5f6fff]/40 dark:hover:border-gray-600 hover:bg-[#f3f5ff] dark:hover:bg-gray-800 transition-all'>
+<div 
+  onClick={() => {
+    if (!user) {
+      navigate('/login');
+      setisMenuopen(false);
+    }
+  }}
+  className='flex items-center gap-3 p-3 mt-5 border border-gray-200 dark:border-gray-700 rounded-md cursor-pointer group hover:border-[#5f6fff]/40 dark:hover:border-gray-600 hover:bg-[#f3f5ff] dark:hover:bg-gray-800 transition-all'
+>
   <img src={user?.image || chatassets.user_icon} className='w-7 rounded-full' alt='user' />
   <p className='flex-1 text-sm truncate text-gray-800 dark:text-gray-200'>
     {user ? user.name : 'Login Your Account'}
   </p>
   {user && (
     <img
+      onClick={(e) => {
+        e.stopPropagation();
+        settoken('');
+        localStorage.removeItem('token');
+        navigate('/login');
+      }}
       src={chatassets.logout_icon}
       className='h-5 cursor-pointer hidden group-hover:block invert opacity-80 hover:opacity-100 dark:invert-0 transition'
       alt='logout'
