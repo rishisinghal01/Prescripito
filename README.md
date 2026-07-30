@@ -9,7 +9,7 @@
     <a href="https://prescripito.vercel.app" target="_blank">
       <img src="https://img.shields.io/badge/🚀_Visit_Patient_Portal-2563EB?style=for-the-badge&logoColor=white" alt="Patient Portal" />
     </a>
-    <a href="https://prescripito-admin.vercel.app" target="_blank">
+    <a href="https://prescripito-rfln.vercel.app/" target="_blank">
       <img src="https://img.shields.io/badge/🔐_Visit_Admin_Portal-10B981?style=for-the-badge&logoColor=white" alt="Admin Portal" />
     </a>
   </p>
